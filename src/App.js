@@ -4,39 +4,34 @@ import React,{useEffect,useState} from 'react';
 
 function App() {
   const[musicUrl,setMusicUrl] =useState("");
-  const[text,setText]= useState("");
+  const[playlist,setPlaytlist]= useState([]);
 
+
+const getPlaylistAll =async()=>{
+  const res=await fetch(`http://139.196.141.233:3000/playlist/detail?id=24381616`);
+  const data=await res.json();
+  setPlaytlist(data.playlist.tracks);
+}
+const getMusicUrl =async(id)=>{
+  const res=await fetch(`http://139.196.141.233:3000/song/url?id=${id}`);
+  const data=await res.json();
+  console.log(data.data[0].url);
+  setMusicUrl(data.data[0].url);
+}
   useEffect(() => {
-    const fn = async()=>{
-    const res = await fetch(`http://139.196.141.233:3000/song/url?id=33894312`);
-    const data = await res.json();
-    console.log (data);
-    console.log (data.data[0].url);
-    setMusicUrl(data.data[0].url);
-  }
-    fn();
+    getPlaylistAll();
   }, [0])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <div>
-
+      {playlist.map((item,index)=>{
+        return(
+<div key={index} onClick={()=>{getMusicUrl(item.id)}}>
+  {item.name}
+  {item.id}
 </div>
-<input onChange={(event)=>{setText(event.target.value)}}></input>
-      </header>
-      <audio autoPlay src={musicUrl}></audio>
+        );
+        })}
+<audio autoPlay controls src={musicUrl}></audio>
     </div>
   );
 }
